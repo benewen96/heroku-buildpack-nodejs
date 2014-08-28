@@ -77,14 +77,9 @@ fi
 
 # Scope config var availability only to `npm install`
 (
-  if [ -d "$env_dir" ]; then
-    status "Exporting config vars to environment"
-    export_env_dir $env_dir
-  fi
-
   status "Installing dependencies"
   # Make npm output to STDOUT instead of its default STDERR
-  npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
+  npm install 2>&1 | indent
 )
 
 # Persist goodies like node-version in the slug
