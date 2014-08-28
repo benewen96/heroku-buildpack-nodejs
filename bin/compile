@@ -95,8 +95,8 @@ echo $node_version > $build_dir/.heroku/node-version
 
 # Purge node-related cached content, being careful not to purge the top-level
 # cache, for the sake of heroku-buildpack-multi apps.
-rm -rf $cache_dir/node_modules # (for apps still on the older caching strategy)
-rm -rf $cache_dir/node
+# rm -rf $cache_dir/node_modules # (for apps still on the older caching strategy)
+# rm -rf $cache_dir/node
 mkdir -p $cache_dir/node
 
 # If app has a node_modules directory, cache it.
@@ -109,8 +109,8 @@ fi
 cp -r $build_dir/.heroku $cache_dir/node
 
 status "Cleaning up node-gyp and npm artifacts"
-rm -rf "$build_dir/.node-gyp"
-rm -rf "$build_dir/.npm"
+# rm -rf "$build_dir/.node-gyp"
+# rm -rf "$build_dir/.npm"
 
 # If Procfile is absent, try to create one using `npm start`
 if [ ! -e $build_dir/Procfile ]; then
