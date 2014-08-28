@@ -14,9 +14,6 @@ bp_dir=$(cd $(dirname $0); cd ..; pwd)
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
 
-# Output npm debug info on error
-trap cat_npm_debug_log ERR
-
 # Look in package.json's engines.node field for a semver range
 semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
 
@@ -61,7 +58,7 @@ npm rebuild 2>&1 | indent
 # Scope config var availability only to `npm install`
 status "Installing dependencies"
 # Make npm output to STDOUT instead of its default STDERR
-npm install --quiet | indent
+npm install --quiet 2>&1 | indent
 
 # If Procfile is absent, try to create one using `npm start`
 if [ ! -e $build_dir/Procfile ]; then
