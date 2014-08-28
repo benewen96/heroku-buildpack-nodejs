@@ -21,6 +21,10 @@ semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
 node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
 
 status "Debugging Bower Buildpack"
+status "build_dir: $build_dir"
+status "cache_dir: $cache_dir"
+status "env_dir: $env_dir"
+status "bp_dir: $bp_dir"
 
 # Recommend using semver ranges in a safe manner
 if [ "$semver_range" == "null" ]; then
