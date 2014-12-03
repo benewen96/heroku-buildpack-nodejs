@@ -83,7 +83,8 @@ fi
 
 status "Installing dependencies"
 # Make npm output to STDOUT instead of its default STDERR
-npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
+npm install --userconfig $build_dir/.npmrc 2>&1 | indent
+npm update
 
 # Persist goodies like node-version in the slug
 mkdir -p $build_dir/.heroku
