@@ -13,12 +13,15 @@ bp_dir=$(cd $(dirname $0); cd ..; pwd)
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
 
-# Fix leak
+# Avoid GIT_DIR leak from previous build steps
 status "Resetting git environment"
 unset GIT_DIR
 
-# Output npm debug info on error
-trap cat_npm_debug_log ERR
+# Load config vars into environment
+if [ -d "$env_dir" ]; then
+  status "Exporting config vars to environment"
+  export_env_dir $env_dir
+fi
 
 # Look in package.json's engines.node field for a semver range
 semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
@@ -78,17 +81,9 @@ elif test -d $cache_dir/node/node_modules; then
 
 fi
 
-# Scope config var availability only to `npm install`
-(
-  if [ -d "$env_dir" ]; then
-    status "Exporting config vars to environment"
-    export_env_dir $env_dir
-  fi
-
-  status "Installing dependencies"
-  # Make npm output to STDOUT instead of its default STDERR
-  npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
-)
+status "Installing dependencies"
+# Make npm output to STDOUT instead of its default STDERR
+npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
 
 # Persist goodies like node-version in the slug
 mkdir -p $build_dir/.heroku
@@ -134,16 +129,3 @@ fi
 status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-
-# Post package.json to nomnom service
-# Use a subshell so failures won't break the build.
-(
-  curl \
-    --data @$build_dir/package.json \
-    --fail \
-    --silent \
-    --request POST \
-    --header "content-type: application/json" \
-    https://nomnom.heroku.com/?request_id=$REQUEST_ID \
-    > /dev/null
-) &
