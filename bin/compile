@@ -84,7 +84,7 @@ fi
 node_modules_source="package.json"
 
 # Do we have cached node_modules?
-elif test -d $cache_dir/node/node_modules; then
+if test -d $cache_dir/node/node_modules; then
   node_modules_cached=true
 else
   node_modules_cached=false
