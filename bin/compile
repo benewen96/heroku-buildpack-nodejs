@@ -176,7 +176,7 @@ else
   fi
 
   status "Installing dependencies"
-  npm install --quiet --userconfig $build_dir/.npmrc 2>&1 | indent    # Make npm output to STDOUT instead of its default STDERR
+  npm install --userconfig $build_dir/.npmrc > /dev/null 2>&1 | indent    # Make npm output to STDOUT instead of its default STDERR
   status "Updating dependencies"
   npm update > /dev/null 2>&1 | indent
   status "Deduping dependencies"
