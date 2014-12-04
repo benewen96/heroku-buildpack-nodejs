@@ -179,16 +179,16 @@ echo ""
 if $node_modules_prebuilt; then
   status "Found existing node_modules directory; skipping cache and install"
   status "Rebuilding any native dependencies"
-  npm rebuild >> $log_file 2>&1 | indent
+  npm rebuild >> $logfile 2>&1 | indent
 else
   if $new_node_version; then
     status "Changing node versions, $previous_node_version => $node_version; skipping cache"
-    npm rebuild >> $log_file 2>&1 | indent
+    npm rebuild >> $logfile 2>&1 | indent
   elif $node_modules_cached; then
     status "Restoring node_modules from cache"
     cp -r $cache_dir/node/node_modules $build_dir/
     status "Pruning cached dependencies"
-    npm prune >> $log_file 2>&1 | indent
+    npm prune >> $logfile 2>&1 | indent
   fi
 
   status "Installing dependencies"
