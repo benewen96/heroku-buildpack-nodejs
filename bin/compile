@@ -184,6 +184,7 @@ else
 fi
 
 # List the installed dependencies
+echo ""
 npm ls
 
 ####### Ensure a Procfile
