@@ -29,7 +29,10 @@ cat_npm_debug_log() {
   test -f $build_dir/npm-debug.log && cat $build_dir/npm-debug.log
 }
 
-tail_logfile() {
+tail_error_log() {
+  echo ""
+  echo " !     Build failure"
+  echo " !     Last 100 log lines:"
   tail -n 100 $logfile
 }
 
