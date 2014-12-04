@@ -98,7 +98,7 @@ fi
 
 ####### Provide debugging info and feedback
 
-status "Node version ${semver-range:-not specified} in package.json."
+status "Node version ${semver_range:-not specified} in package.json."
 status "App startup method: $start_method"
 status "Cached node_modules? $node_modules_cached"
 status "node_modules source: $node_modules_source"
