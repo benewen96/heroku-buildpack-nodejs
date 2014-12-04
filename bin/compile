@@ -31,7 +31,7 @@ touch $logfile
 # Trap errors
 trap tail_error_log ERR
 
-# Load config vars into environment start with smart defaults
+# Load config vars into environment; start with smart defaults
 NODE_ENV=production
 npm_config_production=true
 
@@ -76,7 +76,7 @@ else
   has_server=false
 fi
 
-# Can we use npm start (default = node server.js)?
+# Can we use npm start? (default = node server.js)
 npm_start=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .scripts.start)
 if [ "$npm_start" != "null" ]; then
   has_start=true
@@ -107,6 +107,12 @@ else
   node_modules_prebuilt=false
 fi
 
+if test -d $build_dir/shrinkwrap.json; then
+  shrinkwrapped=true
+else
+  shrinkwrapped=false
+fi
+
 ####### Provide debugging info and feedback
 
 echo ""
@@ -135,6 +141,8 @@ fi
 if $node_modules_prebuilt; then
   status "node_modules have been prebuilt"
   protip "Avoid checking node_modules into source control (see NPM FAQ)"
+elif $shrinkwrapped; then
+  status "node_modules will be updated from shrinkwrap.json"
 else
   status "node_modules will be updated from package.json"
 fi
@@ -203,11 +211,13 @@ fi
 echo ""
 npm ls
 
-####### Ensure a Procfile
+####### Create a Procfile if possible
 
 if ! $has_procfile; then
-  status "No Procfile found; Adding 'web: npm start' to new Procfile"
-  echo "web: npm start" > $build_dir/Procfile
+  if $has_start || $has_server; then
+    status "No Procfile found; Adding 'web: npm start' to new Procfile"
+    echo "web: npm start" > $build_dir/Procfile
+  fi
 fi
 
 ####### Create the runtime environment (profile.d)
