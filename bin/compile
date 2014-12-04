@@ -174,16 +174,16 @@ else
   elif $node_modules_cached; then
     status "Restoring node_modules directory from cache"
     cp -r $cache_dir/node/node_modules $build_dir/
-    status "Pruning cached dependencies not specified in package.json"
+    status "Pruning cached dependencies"
     npm prune 2>&1 | indent
   fi
 
   status "Installing dependencies"
-  npm install --userconfig $build_dir/.npmrc 2>&1 | indent    # Make npm output to STDOUT instead of its default STDERR
+  npm install --quiet --userconfig $build_dir/.npmrc 2>&1 | indent    # Make npm output to STDOUT instead of its default STDERR
   status "Updating dependencies"
-  npm update 2>&1 | indent
+  npm update > /dev/null 2>&1 | indent
   status "Deduping dependencies"
-  npm dedupe 2>&1 | indent
+  npm dedupe > /dev/null 2>&1 | indent
 fi
 
 ####### Ensure a Procfile
