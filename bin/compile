@@ -196,10 +196,10 @@ status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 
 # Add binary locations to the PATH
-echo "export PATH=\"\$HOME/vendor/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
+echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/.heroku/node/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
 
 # Default to NODE_ENV=production
-echo "export NODE_ENV=${NODE_ENV:production}" >> $build_dir/.profile.d/nodejs.sh
+echo "export NODE_ENV=${NODE_ENV:-production}" >> $build_dir/.profile.d/nodejs.sh
 
 ####### Clean up
 
