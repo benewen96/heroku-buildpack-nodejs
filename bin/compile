@@ -100,6 +100,7 @@ fi
 
 ####### Provide debugging info and feedback
 
+echo ""
 status "  Node version ${semver_range:-not specified} in package.json."
 
 if [ "$semver_range" == "" ]; then
@@ -120,23 +121,24 @@ fi
 status "  App will start via $start_method."
 
 if $node_modules_cached; then
-  status " Cache of node_modules is present"
+  status "  Cache of node_modules is present"
 else
-  status " No cached node_modules are present"
+  status "  No cached node_modules are present"
 fi
 
 if $node_modules_prebuilt; then
-  status "node_modules have been prebuilt"
+  status "  node_modules have been prebuilt"
   protip "Avoid checking node_modules into source control (see NPM FAQ)"
 else
-  status "node_modules will be built from package.json"
+  status "  node_modules will be built from package.json"
 fi
 
-status "Node and npm environment:"
 status "  NODE_ENV=$NODE_ENV"
 status "  npm_config_production=$npm_config_production"
 
 ####### Vendor in binaries
+
+echo ""
 
 # Resolve non-specific node versions using semver.io
 if ! $has_specific_version; then
@@ -169,6 +171,8 @@ PATH=$heroku_dir/node/bin:$PATH
 cd $build_dir
 
 ####### Build the project's dependencies
+
+echo ""
 
 if $node_modules_prebuilt; then
   status "Found existing node_modules directory; skipping cache and install"
