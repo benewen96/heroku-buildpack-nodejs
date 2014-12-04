@@ -171,7 +171,7 @@ else
   if $new_node_version; then
     status "Changing node versions, $previous_node_version => $node_version; skipping cache"
     npm rebuild 2>&1 | indent
-  elif $node_modules_cached then
+  elif $node_modules_cached; then
     status "Restoring node_modules directory from cache"
     cp -r $cache_dir/node/node_modules $build_dir/
     status "Pruning cached dependencies not specified in package.json"
