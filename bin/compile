@@ -39,7 +39,7 @@ else
 fi
 
 # Is there a requested semver range for node?
-semver_range=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)
+semver_range="$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)"
 node_version=""
 if [ "$semver_range" == "null" ]; then
   semver_range=""
@@ -132,7 +132,6 @@ fi
 ####### Vendor in binaries
 
 # Resolve non-specific node versions using semver.io
-status "has_specific_version = $has_specific_version"
 if ! $has_specific_version; then
   status "Resolving node version $semver_range with semver.io..."
   node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
