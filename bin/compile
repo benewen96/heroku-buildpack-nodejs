@@ -12,6 +12,7 @@ cache_dir=$2
 env_dir=$3
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
 heroku_dir=$build_dir/.heroku
+logfile=$heroku_dir/temp/node-log.txt
 
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
@@ -21,6 +22,14 @@ status "Node Buildpack v63"
 
 # Avoid GIT_DIR leak from previous build steps
 unset GIT_DIR
+
+# Create directories & log file
+mkdir -p $heroku_dir/node
+mkdir -p $heroku_dir/temp
+touch $logfile
+
+# Trap errors
+trap tail_logfile ERR
 
 # Load config vars into environment start with smart defaults
 NODE_ENV=production
@@ -104,7 +113,7 @@ echo ""
 status "Node version ${semver_range:-not specified} in package.json."
 
 if [ "$semver_range" == "" ]; then
-  protip "You should specify a node version in package.json (we'll grab the latest stable for you)"
+  protip "You should specify a node version in package.json"
 elif [ "$semver_range" == "*" ]; then
   protip "Avoid using semver ranges like '*' in engines.node"
 elif [ ${semver_range:0:1} == ">" ]; then
@@ -112,7 +121,7 @@ elif [ ${semver_range:0:1} == ">" ]; then
 fi
 
 if [ "$start_method" == "" ]; then
-  status "App will be unstartable (no Procfile, package.json start script, or server.js)"
+  status "App will be un-startable (no Procfile, package.json start script, or server.js provided)"
 else
   status "App will start via $start_method."
 fi
@@ -150,10 +159,6 @@ else
   new_node_version=false
 fi
 
-# Create home for node
-mkdir -p $heroku_dir/node
-mkdir -p $heroku_dir/temp
-
 # Download node from Heroku's S3 mirror of nodejs.org/dist
 status "Downloading and installing node $node_version..."
 node_url="http://s3pository.heroku.com/node/v$node_version/node-v$node_version-linux-x64.tar.gz"
@@ -174,20 +179,20 @@ echo ""
 if $node_modules_prebuilt; then
   status "Found existing node_modules directory; skipping cache and install"
   status "Rebuilding any native dependencies"
-  npm rebuild 2>&1 | indent
+  npm rebuild > $log_file 2>&1 | indent
 else
   if $new_node_version; then
     status "Changing node versions, $previous_node_version => $node_version; skipping cache"
     npm rebuild 2>&1 | indent
   elif $node_modules_cached; then
-    status "Restoring node_modules directory from cache"
+    status "Restoring node_modules from cache"
     cp -r $cache_dir/node/node_modules $build_dir/
     status "Pruning cached dependencies"
     npm prune > /dev/null 2>&1 | indent
   fi
 
   status "Installing dependencies"
-  npm install --userconfig $build_dir/.npmrc > /dev/null 2>&1 | indent    # Make npm output to STDOUT instead of its default STDERR
+  npm install --userconfig $build_dir/.npmrc > /dev/null 2>&1 | indent
   status "Updating dependencies"
   npm update > /dev/null 2>&1 | indent
   status "Deduping dependencies"

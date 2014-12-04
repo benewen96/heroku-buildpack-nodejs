@@ -29,6 +29,10 @@ cat_npm_debug_log() {
   test -f $build_dir/npm-debug.log && cat $build_dir/npm-debug.log
 }
 
+tail_logfile() {
+  tail -n 100 $logfile
+}
+
 export_env_dir() {
   env_dir=$1
   whitelist_regex=${2:-''}
