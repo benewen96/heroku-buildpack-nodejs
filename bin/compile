@@ -130,7 +130,7 @@ fi
 
 # Resolve non-specific node versions using semver.io
 if ! $has_specific_version; then
-  status "Resolving node version $semver_range with semver.io..."
+  status "Resolving node version ${semver_range:-(latest stable)} with semver.io..."
   node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
 fi
 
@@ -185,7 +185,7 @@ fi
 
 ####### Ensure a Procfile
 
-if [ ! $has_procfile ]; then
+if ! $has_procfile; then
   status "No Procfile found; Adding 'web: npm start' to new Procfile"
   echo "web: npm start" > $build_dir/Procfile
 fi
