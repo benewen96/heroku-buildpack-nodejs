@@ -33,30 +33,29 @@ testDangerousRangeStar() {
 testDangerousRangeGreaterThan() {
   compile "dangerous-range-greater-than"
   assertCaptured "PRO TIP: Avoid using semver ranges starting with '>'"
-  assertCaptured "Requested node range:  >"
-  assertCaptured "Resolved node version: 0.10."
+  assertCaptured "Resolving node version >0.4 with semver.io"
+  assertCaptured "Downloading and installing node 0.10"
   assertCapturedSuccess
 }
 
 testRangeWithSpace() {
   compile "range-with-space"
-  assertCaptured "Requested node range:  >= 0.8.x"
-  assertCaptured "Resolved node version: 0.10."
+  assertCaptured "Resolving node version >= 0.8.x with semver.io"
+  assertCaptured "Downloading and installing node 0.10"
   assertCapturedSuccess
 }
 
 testStableVersion() {
   compile "stable-node"
-  assertNotCaptured "PRO TIP: Avoid using semver"
-  assertNotCaptured "PRO TIP: Specify"
-  assertCaptured "Resolved node version"
+  assertNotCaptured "PRO TIP:"
+  assertCaptured "Downloading and installing node 0.10"
   assertCapturedSuccess
 }
 
 testUnstableVersion() {
   compile "unstable-version"
-  assertCaptured "Requested node range:  >0.11.0"
-  assertCaptured "Resolved node version: 0.11."
+  assertCaptured "Resolving node version >0.11.0 with semver.io"
+  assertCaptured "Downloading and installing node 0.11"
   assertCapturedSuccess
 }
 
