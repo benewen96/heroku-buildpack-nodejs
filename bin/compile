@@ -154,7 +154,7 @@ node_url="http://s3pository.heroku.com/node/v$node_version/node-v$node_version-l
 curl $node_url -s -o - | tar xzf - -C $heroku_dir/temp
 
 # Move node (and npm) into .heroku/node and make them executable
-mv $heroku_dir/temp/node-v$node_version-linux-x64/bin $heroku_dir/node/bin
+mv $heroku_dir/temp/node-v$node_version-linux-x64 $heroku_dir/node
 chmod +x $heroku_dir/node/bin/*
 PATH=$heroku_dir/node/bin:$PATH
 
