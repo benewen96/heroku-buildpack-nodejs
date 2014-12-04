@@ -23,6 +23,7 @@ status "Node Buildpack v63"
 unset GIT_DIR
 
 # Load config vars into environment
+NODE_ENV=production
 if [ -d "$env_dir" ]; then
   export_env_dir $env_dir
 fi
@@ -102,6 +103,7 @@ status "Node version ${semver_range:-not specified} in package.json."
 status "App startup method: $start_method"
 status "Cached node_modules? $node_modules_cached"
 status "node_modules source: $node_modules_source"
+status "NODE_ENV=$NODE_ENV"
 
 # Abort of starting is impossible
 if [ "$start_method" == "" ]; then
@@ -204,7 +206,6 @@ echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/.heroku/node/node_
 
 # Default to NODE_ENV=production
 echo "export NODE_ENV=${NODE_ENV:-production}" >> $build_dir/.profile.d/nodejs.sh
-status "NODE_ENV=${NODE_ENV:-production}"
 
 ####### Clean up
 
