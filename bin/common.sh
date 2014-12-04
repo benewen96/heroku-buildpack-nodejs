@@ -33,7 +33,8 @@ tail_error_log() {
   echo ""
   echo " !     Build failure"
   echo " !     Last 100 log lines:"
-  tail -n 100 $logfile
+  echo ""
+  tail -n 100 $logfile | indent
 }
 
 export_env_dir() {
