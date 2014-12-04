@@ -112,13 +112,10 @@ elif [ ${semver_range:0:1} == ">" ]; then
 fi
 
 if [ "$start_method" == "" ]; then
-  status "Unable to start app: you can fix this by creating any of the following:"
-  status "- A Procfile" | indent
-  status "- A start script in package.json" | indent
-  status "- server.js in your project's root" | indent
-  error "Can't start"
+  status "App will be unstartable (no Procfile, package.json start script, or server.js)"
+else
+  status "App will start via $start_method."
 fi
-status "App will start via $start_method."
 
 if $node_modules_cached; then
   status "Cache of node_modules is present"
