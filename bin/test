@@ -14,16 +14,19 @@ testDetectWithoutPackageJson() {
 
 testNoVersion() {
   compile "no-version"
-  assertCaptured "PRO TIP: Specify a node version in package.json"
-  assertCaptured "Defaulting to latest stable node"
+  assertCaptured "PRO TIP: You should specify a node version in package.json"
+  assertCaptured "Node version not specified in package.json"
+  assertCaptured "Resolving node version (latest stable) with semver.io"
+  assertCaptured "Downloading and installing node 0.10"
   assertCapturedSuccess
 }
 
 testDangerousRangeStar() {
   compile "dangerous-range-star"
   assertCaptured "PRO TIP: Avoid using semver ranges like '*'"
-  assertCaptured "Requested node range:  *"
-  assertCaptured "Resolved node version: 0.10"
+  assertCaptured "Node version * in package.json"
+  assertCaptured "Resolving node version * with semver.io"
+  assertCaptured "Downloading and installing node 0.10"
   assertCapturedSuccess
 }
 
