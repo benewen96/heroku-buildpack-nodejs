@@ -16,6 +16,9 @@ heroku_dir=$build_dir/.heroku
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
 
+# Output version
+status "Node Buildpack v63"
+
 # Avoid GIT_DIR leak from previous build steps
 status "Resetting git environment"
 unset GIT_DIR
@@ -46,7 +49,7 @@ else
   has_semver=true
   if [[ "$semver_range" =~ ^[0-9]\.[0-9]\.[0-9]$ ]]; then
     has_specific_version=true
-    node_version=semver_range
+    node_version="$semver_range"
   else
     has_specific_version=false
   fi
@@ -67,7 +70,7 @@ fi
 npm_start=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .scripts.start)
 if [ "$npm_start" != "null" ]; then
   has_start=true
-  start_method="Package.json start script"
+  start_method="npm start"
 else
   has_start=false
 fi
@@ -97,9 +100,8 @@ fi
 
 ####### Provide debugging info and feedback
 
-status "Node Buildpack v63"
 status "Previous node version: ${previous_node_version:-none}"
-status "Requested node version: ${semver_range:-missing}"
+status "Package.json node version: ${semver_range:-not specified}"
 status "App startup method: $start_method"
 status "node_modules source: $node_modules_source"
 status "node_modules cached? $node_modules_cached"
@@ -115,7 +117,7 @@ fi
 
 # Warn about dangerous engines.node ranges
 if [ "$semver_range" == "" ]; then
-  protip "You should specify a node version in package.json - will query for latest stable."
+  protip "You should specify a node version in package.json (we'll grab the latest stable for you)"
 elif [ "$semver_range" == "*" ]; then
   protip "Avoid using semver ranges like '*' in engines.node"
 elif [ ${semver_range:0:1} == ">" ]; then
@@ -130,6 +132,7 @@ fi
 ####### Vendor in binaries
 
 # Resolve non-specific node versions using semver.io
+status "has_specific_version = $has_specific_version"
 if [ ! $has_specific_version ]; then
   status "Resolving node version $semver_range with semver.io..."
   node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
