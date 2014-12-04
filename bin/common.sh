@@ -31,8 +31,7 @@ cat_npm_debug_log() {
 
 tail_error_log() {
   echo ""
-  echo " !     Build failure"
-  echo " !     Last 100 log lines:"
+  echo " !     Build failure:"
   echo ""
   tail -n 100 $logfile | indent
 }
