@@ -31,8 +31,7 @@ touch $logfile
 # Trap errors
 trap tail_error_log ERR
 
-# Load config vars into environment; start with smart defaults
-NODE_ENV=production
+# Load config vars into environment; start with defaults
 npm_config_production=true
 
 if [ -d "$env_dir" ]; then
@@ -228,8 +227,8 @@ mkdir -p $build_dir/.profile.d
 # Add binary locations to the PATH
 echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
 
-# Default to NODE_ENV=production
-echo "export NODE_ENV=${NODE_ENV:-production}" >> $build_dir/.profile.d/nodejs.sh
+# Export npm_config
+echo "npm_config_production=$npm_config_production" >> $build_dir/.profile.d/nodejs.sh
 
 ####### Clean up
 
