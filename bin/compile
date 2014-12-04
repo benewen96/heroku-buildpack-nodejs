@@ -200,6 +200,7 @@ echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/.heroku/node/node_
 
 # Default to NODE_ENV=production
 echo "export NODE_ENV=${NODE_ENV:-production}" >> $build_dir/.profile.d/nodejs.sh
+echo "NODE_ENV=$NODE_ENV"
 
 ####### Clean up
 
