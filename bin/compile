@@ -20,12 +20,10 @@ source $bp_dir/bin/common.sh
 status "Node Buildpack v63"
 
 # Avoid GIT_DIR leak from previous build steps
-status "Resetting git environment"
 unset GIT_DIR
 
 # Load config vars into environment
 if [ -d "$env_dir" ]; then
-  status "Exporting config vars to environment"
   export_env_dir $env_dir
 fi
 
@@ -100,11 +98,10 @@ fi
 
 ####### Provide debugging info and feedback
 
-status "Previous node version: ${previous_node_version:-none}"
-status "Package.json node version: ${semver_range:-not specified}"
+status "Node version ${semver-range:-not specified} in package.json."
 status "App startup method: $start_method"
+status "Cached node_modules? $node_modules_cached"
 status "node_modules source: $node_modules_source"
-status "node_modules cached? $node_modules_cached"
 
 # Abort of starting is impossible
 if [ "$start_method" == "" ]; then
