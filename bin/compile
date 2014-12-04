@@ -22,8 +22,10 @@ status "Node Buildpack v63"
 # Avoid GIT_DIR leak from previous build steps
 unset GIT_DIR
 
-# Load config vars into environment
+# Load config vars into environment start with smart defaults
 NODE_ENV=production
+npm_config_production=true
+
 if [ -d "$env_dir" ]; then
   export_env_dir $env_dir
 fi
@@ -82,9 +84,6 @@ else
   has_procfile=false
 fi
 
-# By default, we'll build node_modules from package.json
-node_modules_source="package.json"
-
 # Do we have cached node_modules?
 if test -d $cache_dir/node/node_modules; then
   node_modules_cached=true
@@ -94,27 +93,15 @@ fi
 
 # Does node_modules dir already exist?
 if test -d $build_dir/node_modules; then
-  node_modules_source="prebuilt"
+  node_modules_prebuilt=true
+else
+  node_modules_prebuilt=false
 fi
 
 ####### Provide debugging info and feedback
 
 status "  Node version ${semver_range:-not specified} in package.json."
-status "  App startup method: $start_method"
-status "  Cached node_modules? $node_modules_cached"
-status "  node_modules source: $node_modules_source"
-status "  NODE_ENV=$NODE_ENV"
 
-# Abort of starting is impossible
-if [ "$start_method" == "" ]; then
-  status "Unable to start app: you can fix this by creating any of the following:"
-  status "- A Procfile" | indent
-  status "- A start script in package.json" | indent
-  status "- server.js in your project's root" | indent
-  error "Can't start"
-fi
-
-# Warn about dangerous engines.node ranges
 if [ "$semver_range" == "" ]; then
   protip "You should specify a node version in package.json (we'll grab the latest stable for you)"
 elif [ "$semver_range" == "*" ]; then
@@ -123,10 +110,31 @@ elif [ ${semver_range:0:1} == ">" ]; then
   protip "Avoid using semver ranges starting with '>' in engines.node"
 fi
 
-# Warn about checked-in node_modules
-if [ "$node_modules_source" == "prebuilt" ]; then
-  protip "Avoid checking node_modules into source control (see NPM FAQ)"
+if [ "$start_method" == "" ]; then
+  status "Unable to start app: you can fix this by creating any of the following:"
+  status "- A Procfile" | indent
+  status "- A start script in package.json" | indent
+  status "- server.js in your project's root" | indent
+  error "Can't start"
 fi
+status "  App will start via $start_method."
+
+if $node_modules_cached; then
+  status " Cache of node_modules is present"
+else
+  status " No cached node_modules are present"
+fi
+
+if $node_modules_prebuilt; then
+  status "node_modules have been prebuilt"
+  protip "Avoid checking node_modules into source control (see NPM FAQ)"
+else
+  status "node_modules will be built from package.json"
+fi
+
+status "Node and npm environment:"
+status "  NODE_ENV=$NODE_ENV"
+status "  npm_config_production=$npm_config_production"
 
 ####### Vendor in binaries
 
@@ -162,7 +170,7 @@ cd $build_dir
 
 ####### Build the project's dependencies
 
-if [ "$node_modules_source" == "prebuilt" ]; then
+if $node_modules_prebuilt; then
   status "Found existing node_modules directory; skipping cache and install"
   status "Rebuilding any native dependencies"
   npm rebuild 2>&1 | indent
