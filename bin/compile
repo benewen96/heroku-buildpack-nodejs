@@ -175,7 +175,7 @@ else
     status "Restoring node_modules directory from cache"
     cp -r $cache_dir/node/node_modules $build_dir/
     status "Pruning cached dependencies"
-    npm prune 2>&1 | indent
+    npm prune > /dev/null 2>&1 | indent
   fi
 
   status "Installing dependencies"
