@@ -62,8 +62,8 @@ testUnstableVersion() {
 testProfileCreated() {
   compile "stable-node"
   assertCaptured "Building runtime environment"
-  assertFileContains "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" "./.profile.d/nodejs.sh"
-  assertFileContains "npm_config_production=true" "./.profile.d/nodejs.sh"
+  assertFileContains "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" ".profile.d/nodejs.sh"
+  assertFileContains "npm_config_production=true" ".profile.d/nodejs.sh"
   assertCapturedSuccess
 }
 
