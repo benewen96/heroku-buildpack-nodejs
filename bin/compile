@@ -44,7 +44,7 @@ if [ "$semver_range" == "null" ]; then
   has_specific_version=false
 else
   has_semver=true
-  if [[ "semver_range" =~ "^\d+\.\d+\.\d+$" ]]; then
+  if [[ "$semver_range" =~ ^[0-9]\.[0-9]\.[0-9]$ ]]; then
     has_specific_version=true
     node_version=semver_range
   else
@@ -67,7 +67,7 @@ fi
 npm_start=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .scripts.start)
 if [ "$npm_start" != "null" ]; then
   has_start=true
-  start_method="scripts.start"
+  start_method="Package.json start script"
 else
   has_start=false
 fi
@@ -98,11 +98,11 @@ fi
 ####### Provide debugging info and feedback
 
 status "Node Buildpack v63"
-status "Previous node version: ${previous_node_version:none}" | indent
-status "Requested node version: ${semver_range:missing}" | indent
-status "App startup method: $start_method" | indent
-status "node_modules source: $node_modules_source" | indent
-status "Have node_modules cache: $node_modules_cached" | indent
+status "Previous node version: ${previous_node_version:-none}"
+status "Requested node version: ${semver_range:-missing}"
+status "App startup method: $start_method"
+status "node_modules source: $node_modules_source"
+status "node_modules cached? $node_modules_cached"
 
 # Abort of starting is impossible
 if [ "$start_method" == "" ]; then
