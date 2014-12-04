@@ -133,7 +133,7 @@ fi
 
 # Resolve non-specific node versions using semver.io
 status "has_specific_version = $has_specific_version"
-if [ ! $has_specific_version ]; then
+if ! [ $has_specific_version ]; then
   status "Resolving node version $semver_range with semver.io..."
   node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
 fi
