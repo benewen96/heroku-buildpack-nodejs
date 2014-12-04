@@ -193,9 +193,7 @@ else
 
   status "Installing dependencies"
   npm install --userconfig $build_dir/.npmrc >> $logfile 2>&1 | indent
-  status "Updating dependencies"
-  npm update >> $logfile 2>&1 | indent
-  status "Deduping dependencies"
+  status "Updating and deduping dependencies"
   npm dedupe >> $logfile 2>&1 | indent
 fi
 
