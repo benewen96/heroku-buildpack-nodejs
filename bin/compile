@@ -132,7 +132,7 @@ fi
 ####### Provide debugging info and feedback
 
 echo ""
-status "Node version ${semver_range:-not specified} in package.json."
+status "Node version ${semver_range:-not} requested in package.json."
 
 if [ "$semver_range" == "" ]; then
   protip "You should specify a node version in package.json" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
@@ -143,7 +143,7 @@ elif [ ${semver_range:0:1} == ">" ]; then
 fi
 
 if $override_npm; then
-  status "Npm version $npm_range in package.json."
+  status "Npm version $npm_range requested in package.json."
 else
   status "Using standard npm bundled with node."
 fi
