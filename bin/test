@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # See README.md for info on running these tests.
 
+testNpmVersionSpecific() {
+  compile "npm-version-specific"
+  cat "${STD_OUT}"
+  assertCapturedSuccess
+}
+
 testDetectWithPackageJson() {
   detect "stable-node"
   assertCaptured "Node.js"
@@ -200,7 +206,6 @@ testShrinkwrap() {
   assertNotCaptured "mocha"
   assertCapturedSuccess
 }
-
 
 # Utils
 
