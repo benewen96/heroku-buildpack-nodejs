@@ -205,7 +205,7 @@ if $override_npm; then
     npm_version=$(curl --silent --get --data-urlencode "range=${npm_range}" https://semver.io/npm/resolve)
   fi
   status "Overriding npm `npm --version` with npm $npm_version..."
-  npm install -g npm@$npm_version >> $logfile 2>$1 | indent
+  npm install -g npm@$npm_version >> $logfile 2>&1 | indent
 fi
 
 # Run subsequent commands from the build directory
