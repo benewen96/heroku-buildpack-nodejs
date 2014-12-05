@@ -146,7 +146,6 @@ else
   status "node_modules will be updated from package.json"
 fi
 
-status "NODE_ENV=$NODE_ENV"
 status "npm_config_production=$npm_config_production"
 
 ####### Vendor in binaries
@@ -184,7 +183,7 @@ cd $build_dir
 echo ""
 
 if $node_modules_prebuilt; then
-  status "Found existing node_modules directory; skipping cache and install"
+  status "Found existing node_modules directory; skipping cache and installation"
   status "Rebuilding any native dependencies"
   npm rebuild >> $logfile 2>&1 | indent
 else
