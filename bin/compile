@@ -132,7 +132,7 @@ fi
 ####### Provide debugging info and feedback
 
 echo ""
-status "Node version ${semver_range:-not} requested in package.json."
+status "Node version ${semver_range:-(unspecified)} requested in package.json"
 
 if [ "$semver_range" == "" ]; then
   protip "You should specify a node version in package.json" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
@@ -143,21 +143,22 @@ elif [ ${semver_range:0:1} == ">" ]; then
 fi
 
 if $override_npm; then
-  status "Npm version $npm_range requested in package.json."
+  status "Npm version $npm_range requested in package.json"
 else
-  status "Using standard npm bundled with node."
+  status "Using standard npm bundled with node"
 fi
 
 if [ "$start_method" == "" ]; then
-  status "App will be un-startable (no Procfile, package.json start script, or server.js provided)"
+  status "No start mechanism found"
+  protip "Use a Procfile, package.json start script, or server.js file to start your app" "https://devcenter.heroku.com/articles/nodejs-support#runtime-behavior"
 else
-  status "App will start via $start_method."
+  status "App will start via $start_method"
 fi
 
 if $node_modules_cached; then
-  status "Cache of node_modules is present"
+  status "node_modules exists in cache"
 else
-  status "No cached node_modules are present"
+  status "node_modules cache is empty"
 fi
 
 if $node_modules_prebuilt; then
@@ -204,7 +205,7 @@ if $override_npm; then
     status "Resolving npm version ${npm_range} with semver.io..."
     npm_version=$(curl --silent --get --data-urlencode "range=${npm_range}" https://semver.io/npm/resolve)
   fi
-  status "Overriding npm `npm --version` with npm $npm_version..."
+  status "Downloading and installing npm $npm_version (replacing bundled version `npm --version`)..."
   npm install -g npm@$npm_version >> $logfile 2>&1 | indent
 fi
 
