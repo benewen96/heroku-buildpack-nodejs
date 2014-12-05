@@ -56,7 +56,7 @@ if [ "$semver_range" == "null" ]; then
   has_specific_version=false
 else
   has_semver=true
-  if [[ "$semver_range" =~ ^[0-9]\.[0-9]\.[0-9]$ ]]; then
+  if [[ "$semver_range" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     has_specific_version=true
     node_version="$semver_range"
   else
@@ -106,7 +106,7 @@ else
   node_modules_prebuilt=false
 fi
 
-if test -d $build_dir/shrinkwrap.json; then
+if test -d $build_dir/npm-shrinkwrap.json; then
   shrinkwrapped=true
 else
   shrinkwrapped=false
@@ -141,7 +141,7 @@ if $node_modules_prebuilt; then
   status "node_modules have been prebuilt"
   protip "Avoid checking node_modules into source control (see NPM FAQ)"
 elif $shrinkwrapped; then
-  status "node_modules will be updated from shrinkwrap.json"
+  status "node_modules will be updated from npm-shrinkwrap.json"
 else
   status "node_modules will be updated from package.json"
 fi
@@ -228,6 +228,12 @@ echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:
 
 # Export npm_config
 echo "npm_config_production=$npm_config_production" >> $build_dir/.profile.d/nodejs.sh
+
+# Export NODE_HOME
+echo "export NODE_HOME=\"\$HOME/.heroku/node;" >> $build_dir/.profile.d/nodejs.sh
+
+# Also export NODE_HOME for subsequent buildpacks
+echo "export NODE_HOME=\"\$HOME/.heroku/node;" > $bp_dir/export
 
 ####### Clean up
 

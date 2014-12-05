@@ -21,6 +21,13 @@ testNoVersion() {
   assertCapturedSuccess
 }
 
+testSpecificVersion() {
+  compile "specific-version"
+  assertNotCaptured "semver.io"
+  assertCaptured "Downloading and installing node 0.10.29"
+  assertCapturedSuccess
+}
+
 testDangerousRangeStar() {
   compile "dangerous-range-star"
   assertCaptured "PRO TIP: Avoid using semver ranges like '*'"
@@ -62,7 +69,9 @@ testUnstableVersion() {
 testProfileCreated() {
   compile "stable-node"
   assertCaptured "Building runtime environment"
-  assertFile $'export PATH="$HOME/.heroku/node/bin:$HOME/bin:$HOME/node_modules/.bin:$PATH\";\nnpm_config_production=true' ".profile.d/nodejs.sh"
+  assertFileContains $'export PATH="$HOME/.heroku/node/bin:$HOME/bin:$HOME/node_modules/.bin:$PATH\";' "${compile_dir}/.profile.d/nodejs.sh"
+  assertFileContains $'npm_config_production=true' "${compile_dir}/.profile.d/nodejs.sh"
+  assertFileContains $'export NODE_HOME=' "${compile_dir}/.profile.d/nodejs.sh"
   assertCapturedSuccess
 }
 
@@ -143,6 +152,18 @@ testNoEnvVars() {
   assertCapturedSuccess
 }
 
+testNodeHome() {
+  compile "stable-node"
+  assertFileContains "export NODE_HOME=" "${compile_dir}/.profile.d/nodejs.sh"
+  assertCapturedSuccess
+}
+
+testMultiExport() {
+  compile "stable-node"
+  assertFileContains "export NODE_HOME=" "${bp_dir}/export"
+  assertCapturedSuccess
+}
+
 testNoDevDependencies() {
   compile "dev-dependencies"
   assertNotCaptured "lodash"
@@ -169,6 +190,17 @@ testNpmUpdate() {
   assertCaptured "lodash@1.3.1"
   assertCapturedSuccess
 }
+
+testShrinkwrap() {
+  compile "shrinkwrap"
+  assertCaptured "express@4.10.4"
+  assertCaptured "mime-db@1.2.0"
+  assertCaptured "etag@1.5.1"
+  assertCaptured "lodash@2.4.1"
+  assertNotCaptured "mocha"
+  assertCapturedSuccess
+}
+
 
 # Utils
 
