@@ -132,45 +132,53 @@ fi
 ####### Provide debugging info and feedback
 
 echo ""
-status "Node version ${semver_range:-(unspecified)} requested in package.json"
+status "Node version: ${semver_range:-(unspecified)} (package.json engines.node)"
+
+if $override_npm; then
+  status "Npm version: $npm_range (package.json engines.npm)"
+else
+  status "Npm version: default"
+fi
+
+if [ "$start_method" == "" ]; then
+  status "Start mechanism: none"
+else
+  status "Start mechanism: $start_method"
+fi
+
+if $node_modules_cached; then
+  status "node_modules cache: available"
+else
+  status "node_modules cache: empty"
+fi
+
+if $node_modules_prebuilt; then
+  status "node_modules description: prebuilt"
+elif $shrinkwrapped; then
+  status "node_modules description: npm-shrinkwrap.json"
+else
+  status "node_modules description: package.json"
+fi
+
+status "config npm_config_production=$npm_config_production"
+status "config npm_update=$npm_update"
+status "config npm_dedupe=$npm_dedupe"
 
 if [ "$semver_range" == "" ]; then
-  protip "You should specify a node version in package.json" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
+  protip "Specify a node version in package.json" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
 elif [ "$semver_range" == "*" ]; then
   protip "Avoid using semver ranges like '*' in engines.node" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
 elif [ ${semver_range:0:1} == ">" ]; then
   protip "Avoid using semver ranges starting with '>' in engines.node" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
 fi
 
-if $override_npm; then
-  status "Npm version $npm_range requested in package.json"
-else
-  status "Using standard npm bundled with node"
+if $node_modules_prebuilt; then
+  protip "Avoid checking node_modules into source control" "https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-"
 fi
 
 if [ "$start_method" == "" ]; then
-  status "No start mechanism found"
   protip "Use a Procfile, package.json start script, or server.js file to start your app" "https://devcenter.heroku.com/articles/nodejs-support#runtime-behavior"
-else
-  status "App will start via $start_method"
 fi
-
-if $node_modules_cached; then
-  status "node_modules exists in cache"
-else
-  status "node_modules cache is empty"
-fi
-
-if $node_modules_prebuilt; then
-  status "node_modules have been prebuilt"
-  protip "Avoid checking node_modules into source control" "https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-"
-elif $shrinkwrapped; then
-  status "node_modules will be updated from npm-shrinkwrap.json"
-else
-  status "node_modules will be updated from package.json"
-fi
-
-status "npm_config_production=$npm_config_production"
 
 ####### Vendor in binaries
 
