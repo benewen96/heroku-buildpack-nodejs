@@ -132,37 +132,39 @@ fi
 ####### Provide debugging info and feedback
 
 echo ""
-status "Node version: ${semver_range:-(unspecified)} (package.json engines.node)"
+status "Node engine:         ${semver_range:-unspecified}"
 
 if $override_npm; then
-  status "Npm version: $npm_range (package.json engines.npm)"
+  status "Npm engine:          $npm_range"
 else
-  status "Npm version: default"
+  status "Npm engine:          default"
 fi
 
 if [ "$start_method" == "" ]; then
-  status "Start mechanism: none"
+  status "Start mechanism:     none"
 else
-  status "Start mechanism: $start_method"
+  status "Start mechanism:     $start_method"
 fi
 
 if $node_modules_cached; then
-  status "node_modules cache: available"
+  status "node_modules cache:  available"
 else
-  status "node_modules cache: empty"
+  status "node_modules cache:  empty"
 fi
 
 if $node_modules_prebuilt; then
-  status "node_modules description: prebuilt"
+  status "node_modules source: prebuilt"
 elif $shrinkwrapped; then
-  status "node_modules description: npm-shrinkwrap.json"
+  status "node_modules source: npm-shrinkwrap.json"
 else
-  status "node_modules description: package.json"
+  status "node_modules source: package.json"
 fi
 
-status "config npm_config_production=$npm_config_production"
-status "config npm_update=$npm_update"
-status "config npm_dedupe=$npm_dedupe"
+echo ""
+
+status "npm_config_production=$npm_config_production"
+status "npm_update=$npm_update"
+status "npm_dedupe=$npm_dedupe"
 
 if [ "$semver_range" == "" ]; then
   protip "Specify a node version in package.json" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
