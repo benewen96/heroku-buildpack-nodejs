@@ -34,8 +34,8 @@ touch $logfile
 trap tail_error_log ERR
 
 # Load config vars into environment; start with defaults
-npm_config_production=true
-clean_build=false
+NPM_CONFIG_PRODUCTION=true
+CLEAN_BUILD=false
 
 if [ -d "$env_dir" ]; then
   export_env_dir $env_dir
@@ -84,8 +84,8 @@ status "node_modules cached: $modules_cached"
 
 echo ""
 
-status "npm_config_production=$npm_config_production"
-status "clean_build=$clean_build"
+status "NPM_CONFIG_PRODUCTION=$NPM_CONFIG_PRODUCTION"
+status "CLEAN_BUILD=$CLEAN_BUILD"
 
 source $bp_dir/bin/warnings.sh
 
@@ -113,7 +113,7 @@ PATH=$heroku_dir/node/bin:$PATH
 if [ "$npm_engine" != "" ]; then
   echo ""
   if ! $npm_is_exact; then
-    status "Resolving npm version ${npm_engine} with semver.io..."
+    status "Resolving npm version ${npm_engine} via semver.io..."
     npm_engine=$(curl --silent --get --data-urlencode "range=${npm_engine}" https://semver.io/npm/resolve)
   fi
   status "Downloading and installing npm $npm_engine (replacing version `npm --version`)..."
@@ -148,7 +148,7 @@ elif [ $modules_source == "prebuilt" ]; then
   status "Rebuilding native modules for this architecture"
   npm rebuild >> $logfile 2>&1
 
-elif $modules_cached && ! $clean_build && ! $cache_busted; then
+elif $modules_cached && ! $CLEAN_BUILD && ! $cache_busted; then
   status "Restoring node modules from cache"
   cp -r $cache_dir/node/node_modules $build_dir/
   status "Pruning unused dependencies"
