@@ -47,8 +47,8 @@ node_previous=file_contents "$cache_dir/node/node-version"
 
 # What's the requested semver range for npm?
 npm_engine=$(package_json ".engines.npm")
-npm_is_exact=[[ "$npm_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
-npm_previous=file_contents "$cache_dir/node/npm-version"
+[[ "$npm_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && npm_is_exact=true || npm_is_exact=false
+npm_previous=$(file_contents "$cache_dir/node/npm-version")
 
 # How does this app start?
 if test -d $build_dir/Procfile; then start_method="Procfile"
@@ -65,7 +65,7 @@ else modules_source=""
 fi
 
 # What does our cache look like?
-modules_cached = test -d $cache_dir/node/node_modules
+test -d $cache_dir/node/node_modules && modules_cached=true || modules_cached=false
 
 ####### Provide debugging info and feedback
 
