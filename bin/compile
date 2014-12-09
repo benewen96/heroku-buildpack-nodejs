@@ -14,7 +14,7 @@ cache_dir=$2
 env_dir=$3
 bp_dir=$(cd $(dirname $0); cd ..; pwd)
 heroku_dir=$build_dir/.heroku
-logfile=$heroku_dir/temp/node-log.txt
+logfile=/tmp/node-log.txt
 
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
@@ -27,7 +27,6 @@ unset GIT_DIR
 
 # Create directories & log file
 mkdir -p $heroku_dir/node
-mkdir -p $heroku_dir/temp
 touch $logfile
 
 # Trap errors
@@ -35,7 +34,7 @@ trap tail_error_log ERR
 
 # Load config vars into environment; start with defaults
 export NPM_CONFIG_PRODUCTION=true
-export CLEAN_BUILD=false
+export BUILD_CLEAN=false
 
 if [ -d "$env_dir" ]; then
   export_env_dir $env_dir
@@ -85,7 +84,7 @@ status "node_modules cached: $modules_cached"
 echo ""
 
 status "NPM_CONFIG_PRODUCTION=$NPM_CONFIG_PRODUCTION"
-status "CLEAN_BUILD=$CLEAN_BUILD"
+status "BUILD_CLEAN=$BUILD_CLEAN"
 
 source $bp_dir/bin/warnings.sh
 
@@ -102,10 +101,10 @@ fi
 # Download node from Heroku's S3 mirror of nodejs.org/dist
 status "Downloading and installing node $node_engine..."
 node_url="http://s3pository.heroku.com/node/v$node_engine/node-v$node_engine-linux-x64.tar.gz"
-curl $node_url -s -o - | tar xzf - -C $heroku_dir/temp
+curl $node_url -s -o - | tar xzf - -C /tmp
 
 # Move node (and npm) into .heroku/node and make them executable
-mv $heroku_dir/temp/node-v$node_engine-linux-x64/* $heroku_dir/node
+mv /tmp/node-v$node_engine-linux-x64/* $heroku_dir/node
 chmod +x $heroku_dir/node/bin/*
 PATH=$heroku_dir/node/bin:$PATH
 
@@ -148,7 +147,7 @@ elif [ $modules_source == "prebuilt" ]; then
   status "Rebuilding native modules for this architecture"
   npm rebuild >> $logfile 2>&1
 
-elif $modules_cached && ! $CLEAN_BUILD && ! $cache_busted; then
+elif $modules_cached && ! $BUILD_CLEAN && ! $cache_busted; then
   status "Restoring node modules from cache"
   cp -r $cache_dir/node/node_modules $build_dir/
   status "Pruning unused dependencies"
@@ -192,14 +191,12 @@ echo "export NODE_HOME=\"\$HOME/.heroku/node;" >> $bp_dir/export
 
 status "Cleaning up build artifacts"
 
-# Clear temporary files
-rm -rf $heroku_dir/temp
-
 # Clean up after npm
 rm -rf "$build_dir/.node-gyp"
 rm -rf "$build_dir/.npm"
 
 # Clear the cache
+rm -rf $cache_dir/node_modules # (for apps still on the older caching strategy)
 rm -rf $cache_dir/node
 
 ####### Build successful! Store results in cache
@@ -218,4 +215,4 @@ fi
 
 # Get some inspiration
 echo ""
-curl --max-time 3 "http://www.iheartquotes.com/api/v1/random?source=mark_twain+simpsons_chalkboard+prog_style+esr+osp_rules&max_lines=5&show_permalink=0" 2> /dev/null
+curl --max-time 3 "http://www.iheartquotes.com/api/v1/random?source=prog_style+esr+osp_rules+esr&max_lines=5&show_permalink=0" 2> /dev/null
