@@ -213,5 +213,4 @@ if test -d $build_dir/node_modules; then
 fi
 
 # Get some inspiration
-echo ""
-curl --max-time 3 "http://www.iheartquotes.com/api/v1/random?source=prog_style+esr+osp_rules+esr&max_lines=5&show_permalink=0" 2> /dev/null
+quote
