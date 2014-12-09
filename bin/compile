@@ -178,7 +178,7 @@ export_home="export NODE_HOME=\"\$HOME/.heroku/node\""
 echo $export_path > $build_dir/.profile.d/nodejs.sh
 echo $export_home >> $build_dir/.profile.d/nodejs.sh
 echo $export_path > $bp_dir/export
-echo $export_home > $bp_dir/export
+echo $export_home >> $bp_dir/export
 
 ####### Clean up
 
