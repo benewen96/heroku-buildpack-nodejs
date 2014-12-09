@@ -6,6 +6,8 @@ set -e            # fail fast
 set -o pipefail   # don't ignore exit codes when piping output
 # set -x          # enable debugging
 
+bp_version="63"
+
 # Configure directories
 build_dir=$1
 cache_dir=$2
@@ -18,7 +20,7 @@ logfile=$heroku_dir/temp/node-log.txt
 source $bp_dir/bin/common.sh
 
 # Output version
-status "Node.js Buildpack v63"
+status "Node.js Buildpack v$bp_version"
 
 # Avoid GIT_DIR leak from previous build steps
 unset GIT_DIR
@@ -40,6 +42,9 @@ if [ -d "$env_dir" ]; then
 fi
 
 ####### Determine current state
+
+# Which version of the buildpack did we use last time?
+bp_previous=$(file_contents "$cache_dir/node/bp-version")
 
 # What's the requested semver range for node?
 node_engine=$(package_json ".engines.node")
@@ -129,6 +134,9 @@ if [ "$node_previous" != "" ] && [ "$node_engine" != "$node_previous" ]; then
 elif [ "$npm_previous" != "" ] && [ "$npm_engine" != "$npm_previous" ]; then
   status "Npm version changed ($npm_previous => $npm_engine); invalidating cache"
   cache_busted=true
+elif [ "$bp_previous" != "" ] && [ "$bp_version" != "$bp_previous" ]; then
+  status "Buildpack version changed ($bp_previous => $bp_version); invalidating cache"
+  cache_busted=true
 else
   cache_busted=false
 fi
@@ -201,6 +209,7 @@ mkdir -p $cache_dir/node
 
 echo $node_engine > $cache_dir/node/node-version
 echo $npm_engine > $cache_dir/node/npm-version
+echo $bp_version > $cache_dir/node/bp-version
 
 if test -d $build_dir/node_modules; then
   status "Caching node_modules for future builds"
