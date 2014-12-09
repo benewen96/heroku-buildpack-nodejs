@@ -123,8 +123,6 @@ cd $build_dir
 
 ####### Build the project's dependencies
 
-echo ""
-
 # Did we bust the cache?
 if [ "$node_previous" != "" ] && [ "$node_engine" != "$node_previous" ]; then
   status "Node version changed ($node_previous => $node_engine); invalidating cache"
@@ -213,6 +211,3 @@ fi
 # Show the final dependency tree
 echo ""
 npm ls
-
-# Get some inspiration
-quote
