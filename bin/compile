@@ -42,7 +42,7 @@ fi
 
 # What's the requested semver range for node?
 node_engine=$(package_json ".engines.node")
-node_is_exact=[[ "$node_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+[[ "$node_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && node_is_exact=true || node_is_exact=false
 node_previous=file_contents "$cache_dir/node/node-version"
 
 # What's the requested semver range for npm?
