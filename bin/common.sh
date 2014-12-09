@@ -71,6 +71,6 @@ quote() {
   local withQuotes=${text//&quot;/\"}
   local withAmps=${withQuotes//&amp;/&}
   echo ""
-  echo $withAmps
+  echo $withAmps | indent
   echo ""
 }
