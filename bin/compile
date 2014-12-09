@@ -47,12 +47,10 @@ bp_previous=$(file_contents "$cache_dir/node/bp-version")
 
 # What's the requested semver range for node?
 node_engine=$(package_json ".engines.node")
-[[ "$node_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && node_is_exact=true || node_is_exact=false
 node_previous=$(file_contents "$cache_dir/node/node-version")
 
 # What's the requested semver range for npm?
 npm_engine=$(package_json ".engines.npm")
-[[ "$npm_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && npm_is_exact=true || npm_is_exact=false
 npm_previous=$(file_contents "$cache_dir/node/npm-version")
 
 # How does this app start?
@@ -93,7 +91,7 @@ source $bp_dir/bin/warnings.sh
 echo ""
 
 # Resolve non-specific node versions using semver.io
-if ! $node_is_exact; then
+if ! [[ "$node_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   status "Resolving node version ${node_engine:-(latest stable)} via semver.io..."
   node_engine=$(curl --silent --get --data-urlencode "range=${node_engine}" https://semver.io/node/resolve)
 fi
@@ -110,7 +108,7 @@ PATH=$heroku_dir/node/bin:$PATH
 
 # Optionally bootstrap a different npm version
 if [ "$npm_engine" != "" ]; then
-  if ! $npm_is_exact; then
+  if ! [[ "$npm_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     status "Resolving npm version ${npm_engine} via semver.io..."
     npm_engine=$(curl --silent --get --data-urlencode "range=${npm_engine}" https://semver.io/npm/resolve)
   fi
