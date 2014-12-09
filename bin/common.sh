@@ -71,5 +71,5 @@ quote() {
   local text=$(curl --max-time 3 $url 2> /dev/null)
   local withQuotes=${text//&quot;/\"}
   local withAmps=${withQuotes//&amp;/&}
-  echo $'\n$withAmps\n'
+  echo $"\n$withAmps\n"
 }
