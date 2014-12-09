@@ -18,7 +18,7 @@ logfile=$heroku_dir/temp/node-log.txt
 source $bp_dir/bin/common.sh
 
 # Output version
-status "Node Buildpack v63"
+status "Node.js Buildpack v63"
 
 # Avoid GIT_DIR leak from previous build steps
 unset GIT_DIR
@@ -33,6 +33,7 @@ trap tail_error_log ERR
 
 # Load config vars into environment; start with defaults
 npm_config_production=true
+clean_build=false
 
 if [ -d "$env_dir" ]; then
   export_env_dir $env_dir
@@ -59,8 +60,8 @@ fi
 
 # What's the source-of-truth for node_modules?
 if test -d $build_dir/node_modules; then modules_source="prebuilt"
-elif test -d $build_dir/npm-shrinkwrap.json; then modules_source="npm-shrinkwrap.json"
-elif test -d $build_dir/package.json; then modules_source="package.json"
+elif test -f $build_dir/npm-shrinkwrap.json; then modules_source="npm-shrinkwrap.json"
+elif test -f $build_dir/package.json; then modules_source="package.json"
 else modules_source=""
 fi
 
