@@ -34,8 +34,8 @@ touch $logfile
 trap tail_error_log ERR
 
 # Load config vars into environment; start with defaults
-NPM_CONFIG_PRODUCTION=true
-CLEAN_BUILD=false
+export NPM_CONFIG_PRODUCTION=true
+export CLEAN_BUILD=false
 
 if [ -d "$env_dir" ]; then
   export_env_dir $env_dir
