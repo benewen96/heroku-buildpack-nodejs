@@ -69,7 +69,7 @@ quote() {
   echo ""
   local url="http://www.iheartquotes.com/api/v1/random?source=prog_style+esr+osp_rules+esr&max_lines=3&show_permalink=false&show_source=false"
   local text=$(curl --max-time 3 $url 2> /dev/null)
-  local withQuotes=${text/&quot;/"}
+  local withQuotes=${text/&quot;/\"}
   local withAmps=${withQuotes/&amp;/&}
   echo $withAmps
 }
