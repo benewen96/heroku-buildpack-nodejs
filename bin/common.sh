@@ -24,7 +24,7 @@ file_contents() {
 }
 
 package_json() {
-  local result=`cat $build_dir/package.json | $bp_dir/vendor/jq -r $2`
+  local result="$(cat $build_dir/package.json | $bp_dir/vendor/jq -r $1)"
   if [ "$result" == "null" ]; then echo ""
   else echo "$result"
   fi
