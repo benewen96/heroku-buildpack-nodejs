@@ -13,7 +13,18 @@ protip() {
   echo
   echo "PRO TIP: $tip" | indent
   echo "See ${url:-https://devcenter.heroku.com/articles/nodejs-support}" | indent
-  echo
+}
+
+file_contents() {
+  if test -f $1; then
+    return $(cat $1)
+  else
+    return ""
+  fi
+}
+
+package_json() {
+  return "$(cat $build_dir/package.json | $bp_dir/vendor/jq -r $2)"
 }
 
 # sed -l basically makes sed replace and buffer through stdin to stdout

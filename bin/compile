@@ -40,146 +40,63 @@ fi
 
 ####### Determine current state
 
-# What was the last released node version?
-if test -f $cache_dir/node/node-version; then
-  previous_node_version=$(cat $cache_dir/node/node-version)
-else
-  previous_node_version=""
+# What's the requested semver range for node?
+node_engine=package_json("engines.node")
+node_is_exact=[[ "$node_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+node_previous=file_contents("$cache_dir/node/node-version")
+
+# What's the requested semver range for npm?
+npm_engine=package_json("engines.npm")
+npm_is_exact=[[ "$npm_engine" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+npm_previous=file_contents("$cache_dir/node/npm-version")
+
+# How does this app start?
+if test -d $build_dir/Procfile; then start_method="Procfile"
+elif package_json("scripts.start"); then start_method="npm start"
+elif [ -f $build_dir/server.js ]; then start_method="server.js"
+else start_method=""
 fi
 
-# Is there a requested semver range for node?
-semver_range="$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.node)"
-node_version=""
-if [ "$semver_range" == "null" ]; then
-  semver_range=""
-  has_semver=false
-  has_specific_version=false
-else
-  has_semver=true
-  if [[ "$semver_range" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    has_specific_version=true
-    node_version="$semver_range"
-  else
-    has_specific_version=false
-  fi
+# What's the source-of-truth for node_modules?
+if test -d $build_dir/node_modules; then modules_source="prebuilt"
+elif test -d $build_dir/npm-shrinkwrap.json; then modules_source="npm-shrinkwrap.json"
+elif test -d $build_dir/package.json; then modules_source="package.json"
+else modules_source=""
 fi
 
-# Is there a requested semver range for npm?
-npm_range="$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .engines.npm)"
-npm_version=""
-if [ "$npm_range" == "null" ]; then
-  npm_range=""
-  override_npm=false
-else
-  override_npm=true
-  if [[ "$npm_range" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    specific_npm_version=true
-    npm_version="$npm_range"
-  else
-    specific_npm_version=false
-  fi
-fi
-
-# Start by assuming we can't start
-start_method=""
-
-# Does server.js exist?
-if [ -f $build_dir/server.js ]; then
-  has_server=true
-  start_method="server.js"
-else
-  has_server=false
-fi
-
-# Can we use npm start? (default = node server.js)
-npm_start=$(cat $build_dir/package.json | $bp_dir/vendor/jq -r .scripts.start)
-if [ "$npm_start" != "null" ]; then
-  has_start=true
-  start_method="npm start"
-else
-  has_start=false
-fi
-
-# Is a Procfile provided?
-if test -d $build_dir/Procfile; then
-  has_procfile=true
-  start_method="Procfile"
-else
-  has_procfile=false
-fi
-
-# Do we have cached node_modules?
-if test -d $cache_dir/node/node_modules; then
-  node_modules_cached=true
-else
-  node_modules_cached=false
-fi
-
-# Does node_modules dir already exist?
-if test -d $build_dir/node_modules; then
-  node_modules_prebuilt=true
-else
-  node_modules_prebuilt=false
-fi
-
-# Are node_modules shrinkwrapped?
-if test -d $build_dir/npm-shrinkwrap.json; then
-  shrinkwrapped=true
-else
-  shrinkwrapped=false
-fi
+# What does our cache look like?
+modules_cached = test -d $cache_dir/node/node_modules
 
 ####### Provide debugging info and feedback
 
 echo ""
-status "Node engine:         ${semver_range:-unspecified}"
-
-if $override_npm; then
-  status "Npm engine:          $npm_range"
-else
-  status "Npm engine:          default"
-fi
-
-if [ "$start_method" == "" ]; then
-  status "Start mechanism:     none"
-else
-  status "Start mechanism:     $start_method"
-fi
-
-if $node_modules_cached; then
-  status "node_modules cache:  available"
-else
-  status "node_modules cache:  empty"
-fi
-
-if $node_modules_prebuilt; then
-  status "node_modules source: prebuilt"
-elif $shrinkwrapped; then
-  status "node_modules source: npm-shrinkwrap.json"
-else
-  status "node_modules source: package.json"
-fi
+status "Node engine:         ${node_engine:-unspecified}"
+status "Npm engine:          ${npm_engine:-default}"
+status "Start mechanism:     ${start_method:-none}"
+status "node_modules source: ${modules_source:-none}"
+status "node_modules cached: $modules_cached"
 
 echo ""
 
 status "npm_config_production=$npm_config_production"
-status "npm_update=$npm_update"
-status "npm_dedupe=$npm_dedupe"
+status "clean_build=$clean_build"
 
-if [ "$semver_range" == "" ]; then
+# Protips / warnings
+
+if [ "$node_engine" == "" ]; then
   protip "Specify a node version in package.json" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
-elif [ "$semver_range" == "*" ]; then
-  protip "Avoid using semver ranges like '*' in engines.node" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
-elif [ ${semver_range:0:1} == ">" ]; then
-  protip "Avoid using semver ranges starting with '>' in engines.node" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
+elif [ "$node_engine" == "*" ]; then
+  protip "Avoid semver ranges like '*' in engines.node" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
+elif [ ${node_engine:0:1} == ">" ]; then
+  protip "Avoid semver ranges starting with '>' in engines.node" "https://devcenter.heroku.com/articles/nodejs-support#specifying-a-node-js-version"
 fi
 
-if $node_modules_prebuilt; then
+if [ "$modules_source" == "prebuilt" ]; then
   protip "Avoid checking node_modules into source control" "https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-"
 fi
 
 if [ "$start_method" == "" ]; then
-  protip "Use a Procfile, package.json start script, or server.js file to start your app" "https://devcenter.heroku.com/articles/nodejs-support#runtime-behavior"
+  protip "Include a Procfile, package.json start script, or server.js file to start your app" "https://devcenter.heroku.com/articles/nodejs-support#runtime-behavior"
 fi
 
 ####### Vendor in binaries
@@ -187,36 +104,29 @@ fi
 echo ""
 
 # Resolve non-specific node versions using semver.io
-if ! $has_specific_version; then
-  status "Resolving node version ${semver_range:-(latest stable)} via semver.io..."
-  node_version=$(curl --silent --get --data-urlencode "range=${semver_range}" https://semver.io/node/resolve)
-fi
-
-# Is this a new version of node?
-if [ "$previous_node_version" != "" ] && [ "$node_version" != "$previous_node_version" ]; then
-  new_node_version=true
-else
-  new_node_version=false
+if ! $node_is_exact; then
+  status "Resolving node version ${node_engine:-(latest stable)} via semver.io..."
+  node_engine=$(curl --silent --get --data-urlencode "range=${node_engine}" https://semver.io/node/resolve)
 fi
 
 # Download node from Heroku's S3 mirror of nodejs.org/dist
-status "Downloading and installing node $node_version..."
-node_url="http://s3pository.heroku.com/node/v$node_version/node-v$node_version-linux-x64.tar.gz"
+status "Downloading and installing node $node_engine..."
+node_url="http://s3pository.heroku.com/node/v$node_engine/node-v$node_engine-linux-x64.tar.gz"
 curl $node_url -s -o - | tar xzf - -C $heroku_dir/temp
 
 # Move node (and npm) into .heroku/node and make them executable
-mv $heroku_dir/temp/node-v$node_version-linux-x64/* $heroku_dir/node
+mv $heroku_dir/temp/node-v$node_engine-linux-x64/* $heroku_dir/node
 chmod +x $heroku_dir/node/bin/*
 PATH=$heroku_dir/node/bin:$PATH
 
 # Optionally bootstrap a different npm version
-if $override_npm; then
-  if ! $specific_npm_version; then
-    status "Resolving npm version ${npm_range} with semver.io..."
-    npm_version=$(curl --silent --get --data-urlencode "range=${npm_range}" https://semver.io/npm/resolve)
+if [ "$npm_engine" != "" ]; then
+  if ! $npm_is_exact; then
+    status "Resolving npm version ${npm_engine} with semver.io..."
+    npm_engine=$(curl --silent --get --data-urlencode "range=${npm_engine}" https://semver.io/npm/resolve)
   fi
-  status "Downloading and installing npm $npm_version (replacing bundled version `npm --version`)..."
-  npm install -g npm@$npm_version >> $logfile 2>&1 | indent
+  status "Downloading and installing npm $npm_engine (replacing version `npm --version`)..."
+  npm install -g npm@$npm_engine &> $logfile
 fi
 
 # Run subsequent commands from the build directory
@@ -226,40 +136,49 @@ cd $build_dir
 
 echo ""
 
-if $node_modules_prebuilt; then
-  status "Found existing node_modules directory; skipping cache and installation"
-  status "Rebuilding any native dependencies"
-  npm rebuild >> $logfile 2>&1 | indent
+# Did we bust the cache?
+if [ "$node_previous" != "" ] && [ "$node_engine" != "$node_previous" ]; then
+  cache_busted=true
+elif [ "$npm_previous" != "" ] && [ "$npm_engine" != "$npm_previous" ]; then
+  cache_busted=true
 else
-  if $new_node_version; then
-    status "Changing node versions, $previous_node_version => $node_version; skipping cache"
-    npm rebuild >> $logfile 2>&1 | indent
-  elif $node_modules_cached; then
-    status "Restoring node_modules from cache"
-    cp -r $cache_dir/node/node_modules $build_dir/
-    status "Pruning cached dependencies"
-    npm prune >> $logfile 2>&1 | indent
-  fi
-
-  status "Installing dependencies"
-  npm install --userconfig $build_dir/.npmrc >> $logfile 2>&1 | indent
-  status "Updating dependencies"
-  npm update >> $logfile 2>&1 | indent
-  status "Deduping dependencies"
-  npm dedupe >> $logfile 2>&1 | indent
+  cache_busted=false
 fi
 
-# List the installed dependencies
+if [ "$modules_source" == "" ]; then
+  status "Skipping dependencies"
+
+elif [ $modules_source == "prebuilt" ]; then
+  status "Rebuilding native modules for this architecture"
+  npm rebuild &> $logfile
+
+elif $modules_cached && ! $clean_build && ! $cache_busted; then
+  status "Restoring node_modules from cache"
+  cp -r $cache_dir/node/node_modules $build_dir/
+  status "Pruning unused dependencies"
+  npm prune &> $logfile
+  status "Installing any new modules"
+  npm install --userconfig $build_dir/.npmrc &> $logfile
+
+else
+  status "Installing node_modules"
+  npm install --userconfig $build_dir/.npmrc &> $logfile
+  status "Updating node_modules"
+  npm update &> $logfile
+  status "Deduping dependency tree"
+  npm dedupe &> $logfile
+
+fi
+
+# Show the final dependency tree
 echo ""
 npm ls
 
 ####### Create a Procfile if possible
 
-if ! $has_procfile; then
-  if $has_start || $has_server; then
-    status "No Procfile found; Adding 'web: npm start' to new Procfile"
-    echo "web: npm start" > $build_dir/Procfile
-  fi
+if [ "$start_method" != "" ] && [ "$start_method" != "Procfile" ]; then
+  status "No Procfile found; Adding 'web: npm start' to new Procfile"
+  echo "web: npm start" > $build_dir/Procfile
 fi
 
 ####### Create the runtime environment (profile.d)
@@ -267,16 +186,11 @@ fi
 status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 
-# Add binary locations to the PATH
+# Runtime exports
 echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-
-# Export npm_config
-echo "npm_config_production=$npm_config_production" >> $build_dir/.profile.d/nodejs.sh
-
-# Export NODE_HOME
 echo "export NODE_HOME=\"\$HOME/.heroku/node;" >> $build_dir/.profile.d/nodejs.sh
 
-# Also export PATH and NODE_HOME for subsequent buildpacks
+# Multi-buildpack exports
 echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $bp_dir/export
 echo "export NODE_HOME=\"\$HOME/.heroku/node;" >> $bp_dir/export
 
@@ -287,7 +201,7 @@ status "Cleaning up build artifacts"
 # Clear temporary files
 rm -rf $heroku_dir/temp
 
-# Pick up after npm
+# Clean up after npm
 rm -rf "$build_dir/.node-gyp"
 rm -rf "$build_dir/.npm"
 
@@ -299,7 +213,8 @@ rm -rf $cache_dir/node
 # Create the cache
 mkdir -p $cache_dir/node
 
-echo $node_version > $cache_dir/node/node-version
+echo $node_engine > $cache_dir/node/node-version
+echo $npm_engine > $cache_dir/node/npm-version
 
 if test -d $build_dir/node_modules; then
   status "Caching node_modules for future builds"
