@@ -110,7 +110,6 @@ PATH=$heroku_dir/node/bin:$PATH
 
 # Optionally bootstrap a different npm version
 if [ "$npm_engine" != "" ]; then
-  echo ""
   if ! $npm_is_exact; then
     status "Resolving npm version ${npm_engine} via semver.io..."
     npm_engine=$(curl --silent --get --data-urlencode "range=${npm_engine}" https://semver.io/npm/resolve)
