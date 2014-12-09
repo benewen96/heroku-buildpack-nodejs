@@ -27,6 +27,7 @@ package_json() {
   local result="$(cat $build_dir/package.json | $bp_dir/vendor/jq -r $2)"
   if [ "$result" == "null" ]; then echo ""
   else echo "$result"
+  fi
 }
 
 # sed -l basically makes sed replace and buffer through stdin to stdout
