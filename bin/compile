@@ -142,8 +142,10 @@ echo ""
 
 # Did we bust the cache?
 if [ "$node_previous" != "" ] && [ "$node_engine" != "$node_previous" ]; then
+  status "Node version changed ($node_previous => $node_engine); invalidating cache"
   cache_busted=true
 elif [ "$npm_previous" != "" ] && [ "$npm_engine" != "$npm_previous" ]; then
+  status "Npm version changed ($npm_previous => $npm_engine); invalidating cache"
   cache_busted=true
 else
   cache_busted=false
