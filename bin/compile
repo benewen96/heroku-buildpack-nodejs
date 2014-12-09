@@ -167,8 +167,6 @@ elif $modules_cached && ! $clean_build && ! $cache_busted; then
 else
   status "Installing node_modules"
   npm install --userconfig $build_dir/.npmrc &> $logfile
-  status "Updating node_modules"
-  npm update &> $logfile
   status "Deduping dependency tree"
   npm dedupe &> $logfile
 
