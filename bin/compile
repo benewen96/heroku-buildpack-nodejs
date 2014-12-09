@@ -117,7 +117,7 @@ if [ "$npm_engine" != "" ]; then
     npm_engine=$(curl --silent --get --data-urlencode "range=${npm_engine}" https://semver.io/npm/resolve)
   fi
   status "Downloading and installing npm $npm_engine (replacing version `npm --version`)..."
-  npm install -g npm@$npm_engine &> $logfile
+  npm install -g npm@$npm_engine >> $logfile 2>&1
 fi
 
 # Run subsequent commands from the build directory
@@ -146,21 +146,21 @@ if [ "$modules_source" == "" ]; then
 
 elif [ $modules_source == "prebuilt" ]; then
   status "Rebuilding native modules for this architecture"
-  npm rebuild &> $logfile
+  npm rebuild >> $logfile 2>&1
 
 elif $modules_cached && ! $clean_build && ! $cache_busted; then
-  status "Restoring node_modules from cache"
+  status "Restoring node modules from cache"
   cp -r $cache_dir/node/node_modules $build_dir/
   status "Pruning unused dependencies"
-  npm prune &> $logfile
+  npm prune >> $logfile 2>&1
   status "Installing any new modules"
-  npm install --userconfig $build_dir/.npmrc &> $logfile
+  npm install --userconfig $build_dir/.npmrc >> $logfile 2>&1
 
 else
-  status "Installing node_modules"
-  npm install --userconfig $build_dir/.npmrc &> $logfile
+  status "Installing node modules"
+  npm install --userconfig $build_dir/.npmrc >> $logfile 2>&1
   status "Deduping dependency tree"
-  npm dedupe &> $logfile
+  npm dedupe >> $logfile 2>&1
 
 fi
 
