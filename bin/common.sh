@@ -17,9 +17,9 @@ protip() {
 
 file_contents() {
   if test -f $1; then
-    return $(cat $1)
+    echo "$(cat $1)"
   else
-    return ""
+    echo ""
   fi
 }
 
