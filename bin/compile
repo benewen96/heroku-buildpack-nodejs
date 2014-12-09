@@ -52,7 +52,7 @@ npm_previous=$(file_contents "$cache_dir/node/npm-version")
 
 # How does this app start?
 if test -d $build_dir/Procfile; then start_method="Procfile"
-elif $(package_json ".scripts.start"; then start_method="npm start")
+elif $(package_json ".scripts.start"); then start_method="npm start"
 elif [ -f $build_dir/server.js ]; then start_method="server.js"
 else start_method=""
 fi
