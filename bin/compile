@@ -174,11 +174,11 @@ mkdir -p $build_dir/.profile.d
 
 # Runtime exports
 echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $build_dir/.profile.d/nodejs.sh
-echo "export NODE_HOME=\"\$HOME/.heroku/node;" >> $build_dir/.profile.d/nodejs.sh
+echo "export NODE_HOME=\"\$HOME/.heroku/node;\"" >> $build_dir/.profile.d/nodejs.sh
 
 # Multi-buildpack exports
 echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\";" > $bp_dir/export
-echo "export NODE_HOME=\"\$HOME/.heroku/node;" >> $bp_dir/export
+echo "export NODE_HOME=\"\$HOME/.heroku/node;\"" >> $bp_dir/export
 
 ####### Clean up
 
