@@ -94,6 +94,8 @@ fi
 
 if [ "$modules_source" == "prebuilt" ]; then
   protip "Avoid checking node_modules into source control" "https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-"
+elif [ "$modules_source" == "" ]; then
+  protip "Use 'npm init' and 'npm install --save' to defined dependencies"
 fi
 
 if [ "$start_method" == "" ]; then
