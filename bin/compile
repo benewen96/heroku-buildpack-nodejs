@@ -80,8 +80,8 @@ info "node_modules cached: $modules_cached"
 
 echo ""
 
-status "NPM_CONFIG_PRODUCTION=$NPM_CONFIG_PRODUCTION"
-status "BUILD_CLEAN=$BUILD_CLEAN"
+info "NPM_CONFIG_PRODUCTION=$NPM_CONFIG_PRODUCTION"
+info "BUILD_CLEAN=$BUILD_CLEAN"
 
 source $bp_dir/bin/warnings.sh
 
