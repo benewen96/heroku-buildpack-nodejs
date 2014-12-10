@@ -119,8 +119,8 @@ fi
 cd $build_dir
 
 echo ""
-echo "Using node: `node --version`"
-echo "Using npm: `npm --version`"
+status "Using node: `node --version`"
+status "Using npm: `npm --version`"
 echo ""
 
 ####### Build the project's dependencies
