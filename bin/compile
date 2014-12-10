@@ -177,18 +177,21 @@ fi
 
 ####### Create the runtime environment (profile.d)
 
-head "Building runtime environment"
-mkdir -p $build_dir/.profile.d
+head "Finalizing build"
 
 # Runtime & Multi-buildpack exports
+info "Creating runtime environment"
+mkdir -p $build_dir/.profile.d
 echo "export PATH=\"\$HOME/.heroku/node/bin:\$HOME/bin:\$HOME/node_modules/.bin:\$PATH\"" > $build_dir/.profile.d/nodejs.sh
 echo "export NODE_HOME=\"\$HOME/.heroku/node\"" >> $build_dir/.profile.d/nodejs.sh
+
+info "Exporting binary paths"
 echo "export PATH=\"$build_dir/.heroku/node/bin:$build_dir/node_modules/.bin:\$PATH\"" > $bp_dir/export
 echo "export NODE_HOME=\"$build_dir/.heroku/node\"" >> $bp_dir/export
 
 ####### Clean up
 
-head "Cleaning up build artifacts"
+info "Cleaning up build artifacts"
 
 # Clean up after npm
 rm -rf "$build_dir/.node-gyp"
@@ -212,8 +215,6 @@ if test -d $build_dir/node_modules; then
   cp -r $build_dir/node_modules $cache_dir/node
 fi
 
-####### Summary output
-
 # Show the final dependency tree
-head "Build succeeded"
+info "Build successful!"
 npm ls --depth=0 2>&1 | indent

@@ -121,7 +121,7 @@ testProcfile() {
 testProcfileAbsentNpmStartPresent() {
   compile "procfile-absent-npm-start-present"
   assertCaptured "Start mechanism:     npm start"
-  assertCaptured "No Procfile found; Adding 'web: npm start' to new Procfile"
+  assertCaptured "Adding 'web: npm start' to new Procfile"
   assertFile "web: npm start" "Procfile"
   assertCapturedSuccess
 }
