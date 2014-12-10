@@ -1,17 +1,20 @@
-build_failed() {
-  echo ""
-  echo "Build failed."
-  echo ""
-}
-
 error() {
   echo " !     $*" >&2
   exit 1
 }
 
-status() {
+head() {
+  echo ""
+  echo "-----> $*"
+}
+
+info() {
   #echo "`date +\"%M:%S\"`  $*"
-  echo "$*"
+  echo "       $*"
+}
+
+build_failed() {
+  head "Build failed"
 }
 
 protip() {
