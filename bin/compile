@@ -112,16 +112,11 @@ if [ "$npm_engine" != "" ]; then
     npm_engine=$(curl --silent --get --data-urlencode "range=${npm_engine}" https://semver.io/npm/resolve)
   fi
   status "Downloading and installing npm $npm_engine (replacing version `npm --version`)..."
-  npm install --quiet -g npm@$npm_engine 2>&1
+  npm install --quiet -g npm@$npm_engine > /dev/null
 fi
 
 # Run subsequent commands from the build directory
 cd $build_dir
-
-echo ""
-status "Using node: `node --version`"
-status "Using npm: `npm --version`"
-echo ""
 
 ####### Build the project's dependencies
 

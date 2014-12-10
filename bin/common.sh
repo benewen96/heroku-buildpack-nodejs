@@ -10,7 +10,8 @@ error() {
 }
 
 status() {
-  echo "`date +\"%M:%S\"`  $*"
+  #echo "`date +\"%M:%S\"`  $*"
+  echo "$*"
 }
 
 protip() {
