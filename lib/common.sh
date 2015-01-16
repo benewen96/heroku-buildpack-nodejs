@@ -1,7 +1,3 @@
-set -o errexit    # always exit on error
-set -o errtrace   # trap errors in functions as well
-set -o pipefail   # don't ignore exit codes when piping output
-
 error() {
   echo " !     $*" >&2
   exit 1
@@ -52,6 +48,7 @@ read_json() {
   else
     echo ""
   fi
+  false
 }
 
 # sed -l basically makes sed replace and buffer through stdin to stdout
