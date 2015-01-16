@@ -18,6 +18,17 @@ testDetectWithoutPackageJson() {
   assertCapturedError 1 ""
 }
 
+testBadJson() {
+  compile "bad-json"
+  cat ${STD_OUT}
+  assertCaptured "parse error"
+  assertCaptured "Build failed"
+  assertCaptured "We're sorry this build is failing"
+  assertNotCaptured "build directory..."
+  assertNotCaptured "Installing binaries"
+  assertCapturedError 1 ""
+}
+
 testIoJs() {
   compile "iojs"
   assertCaptured "Node engine:         1.0."
