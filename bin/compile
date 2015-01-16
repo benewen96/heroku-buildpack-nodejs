@@ -26,6 +26,7 @@ unset GIT_DIR
 
 # Provide hook to deal with errors
 trap build_failed ERR
+trap 'exit 1' ERR
 
 ####### Determine current state
 
