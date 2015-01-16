@@ -48,7 +48,6 @@ read_json() {
   else
     echo ""
   fi
-  false
 }
 
 # sed -l basically makes sed replace and buffer through stdin to stdout
