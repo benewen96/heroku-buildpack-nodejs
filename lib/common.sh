@@ -43,10 +43,7 @@ read_json() {
   local file=$1
   local node=$2
   if test -f $file; then
-    local result=`cat $file | $bp_dir/vendor/jq --raw-output --exit-status $node`
-    if [ "$?" != "0" ]; then
-      false
-    fi
+    local result=$(cat $file | $bp_dir/vendor/jq --raw-output --exit-status $node)
     if [ "$result" == "null" ]; then
       echo ""
     else
