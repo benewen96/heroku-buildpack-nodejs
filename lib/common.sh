@@ -45,7 +45,7 @@ read_json() {
   if test -f $file; then
     local result=`cat $file | $bp_dir/vendor/jq --raw-output --exit-status $node`
     if [ "$?" != "0" ]; then
-      exit 1
+      false
     fi
     if [ "$result" == "null" ]; then
       echo ""
