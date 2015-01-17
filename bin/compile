@@ -32,9 +32,9 @@ trap build_failed ERR
 head "Reading application state"
 
 info "package.json..."
-iojs_engine=`read_json "$build_dir/package.json" ".engines.iojs"`
-node_engine=`read_json "$build_dir/package.json" ".engines.node"`
-npm_engine=`read_json "$build_dir/package.json" ".engines.npm"`
+iojs_engine=$(read_json "$build_dir/package.json" ".engines.iojs")
+node_engine=$(read_json "$build_dir/package.json" ".engines.node")
+npm_engine=$(read_json "$build_dir/package.json" ".engines.npm")
 
 info "build directory..."
 start_method=$(get_start_method "$build_dir")
