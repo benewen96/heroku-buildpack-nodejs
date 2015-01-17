@@ -1,7 +1,3 @@
-set -o errexit    # always exit on error
-set -o errtrace   # trap errors in functions as well
-set -o pipefail   # don't ignore exit codes when piping output
-
 error() {
   echo " !     $*" >&2
   exit 1
@@ -43,6 +39,7 @@ read_json() {
   local file=$1
   local node=$2
   if test -f $file; then
+    cat $file | $bp_dir/vendor/jq --raw-output --exit-status $node > /dev/null
     local result=$(cat $file | $bp_dir/vendor/jq --raw-output --exit-status $node)
     if [ "$result" == "null" ]; then
       echo ""
