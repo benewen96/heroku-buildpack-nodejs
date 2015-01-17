@@ -1,17 +1,20 @@
 build_failed() {
-  head "Build failed"
-  echo ""
-  cat $warnings | indent
-  info "We're sorry this build is failing! If you can't find the issue in application code,"
-  info "please submit a ticket so we can help: https://help.heroku.com/"
-  info "You can also try reverting to our legacy Node.js buildpack:"
-  info "heroku config:set BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs#v63"
-  info ""
-  info "Love,"
-  info "Heroku"
+  if [ "$success" != "true" ]; then
+    head "Build failed"
+    echo ""
+    cat $warnings | indent
+    info "We're sorry this build is failing! If you can't find the issue in application code,"
+    info "please submit a ticket so we can help: https://help.heroku.com/"
+    info "You can also try reverting to our legacy Node.js buildpack:"
+    info "heroku config:set BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-nodejs#v63"
+    info ""
+    info "Love,"
+    info "Heroku"
+  fi
 }
 
 build_succeeded() {
+  $success="true"
   head "Build succeeded!"
   echo ""
   (npm ls --depth=0 || true) 2>/dev/null | indent
