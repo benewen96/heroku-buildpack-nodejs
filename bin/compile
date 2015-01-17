@@ -26,7 +26,7 @@ source $bp_dir/lib/warnings.sh
 unset GIT_DIR
 
 # Provide hook to deal with errors
-trap build_failed 0
+trap build_failed ERR
 
 ####### Determine current state
 
