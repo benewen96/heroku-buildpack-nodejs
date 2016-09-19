@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-NPM_CONFIG_PRODUCTION=false ./compile "$1" "$2" "$3"
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+NPM_CONFIG_PRODUCTION=false "$BP_DIR/compile" "$1" "$2" "$3"
