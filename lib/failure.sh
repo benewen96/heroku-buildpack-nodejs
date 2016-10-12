@@ -22,7 +22,7 @@ failure_message() {
 
 fail_invalid_package_json() {
   local result=$(cat ${1:-}/package.json | $JQ "." 2>&1)
-  if [ $? -ne 0 ]; then
+  if [ $? -eq 0 ]; then
     error "Unable to parse package.json"
     echo "$result"
     return 1
