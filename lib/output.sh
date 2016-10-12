@@ -8,17 +8,17 @@ output() {
 
   while read LINE;
   do
-    echo "       $LINE" || true
+    echo "$LINE" || true
     echo "$LINE" >> "$logfile" || true
   done
 }
 
 header() {
   echo "" || true
-  echo "-----> $*" || true
+  echo -e "\033[95m\033[1m=== $*\033[0m" || true
 }
 
 error() {
-  echo " !     $*" >&2 || true
   echo "" || true
+  echo "!!! $*" >&2 || true
 }
