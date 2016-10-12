@@ -20,5 +20,5 @@ header() {
 
 error() {
   echo "" || true
-  echo "!!! $*" >&2 || true
+  echo -e "\033[93m\033[1m\033[40m! $*\033[0m" >&2 || true
 }
