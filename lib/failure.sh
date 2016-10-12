@@ -21,10 +21,10 @@ failure_message() {
 }
 
 fail_invalid_package_json() {
-  local result=$(cat ${1:-}/package.json | $JQ "." 1>/dev/null 2>/dev/null)
-  if ! $result; then
+  local result=$(cat ${1:-}/package.json | $JQ "." 2>&1)
+  if [ $? -ne 0 ]; then
     error "Unable to parse package.json"
-    cat ${1:-}/package.json | $JQ "."
+    echo "$result"
     return 1
   fi
 }
