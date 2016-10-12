@@ -18,7 +18,12 @@ header() {
   echo -e "\033[96m\033[1m\033[40m=== $*\033[0m" || true
 }
 
-error() {
+warning() {
   echo "" || true
   echo -e "\033[93m\033[1m\033[40m! $*\033[0m" >&2 || true
+}
+
+error() {
+  echo "" || true
+  echo -e "\033[91m\033[1m\033[40m! $*\033[0m" >&2 || true
 }
