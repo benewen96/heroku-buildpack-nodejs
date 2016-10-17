@@ -15,7 +15,7 @@ output() {
 
 header() {
   echo "" || true
-  echo -e "\033[96m\033[1m\033[40m=== $*\033[0m" || true
+  echo -e "\033[96m\033[1m\033[40mNode: $*\033[0m" || true
 }
 
 warn() {
