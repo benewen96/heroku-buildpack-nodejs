@@ -51,7 +51,9 @@ npm_node_modules() {
     else
       echo "Installing node modules (package.json)"
     fi
-    npm install --unsafe-perm --userconfig $build_dir/.npmrc --cache $build_dir/.npm --cache-min Infinity 2>&1
+    echo "cache:"
+    ls "$build_dir/.npm"
+    npm install --unsafe-perm --userconfig "$build_dir/.npmrc" --cache "$build_dir/.npm" --cache-min Infinity 2>&1
   else
     echo "Skipping (no package.json)"
   fi
