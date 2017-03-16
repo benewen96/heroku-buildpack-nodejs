@@ -15,6 +15,7 @@ unset GIT_DIR
 
 # Load some convenience functions like status(), echo(), and indent()
 source $bp_dir/bin/common.sh
+source $bp_dir/bin/compliance.sh
 
 # Output npm debug info on error
 trap cat_npm_debug_log ERR
@@ -87,7 +88,12 @@ fi
   status "Installing dependencies"
   # Make npm output to STDOUT instead of its default STDERR
   npm install --userconfig $build_dir/.npmrc --production 2>&1 | indent
+
+  status "Running compliance checks"
+  check_compliance
 )
+
+
 
 # Persist goodies like node-version in the slug
 mkdir -p $build_dir/.heroku
