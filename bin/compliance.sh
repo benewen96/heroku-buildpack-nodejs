@@ -1,6 +1,9 @@
 source $bp_dir/bin/common.sh
 
 
+export_env_dir $env_dir
+
+
 check_compliance() {
   echo "Compliance checks echo!"
   echo $HEROKU_TEST_RUN_BRANCH
