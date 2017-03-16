@@ -2,6 +2,8 @@ source $bp_dir/bin/common.sh
 
 
 check_compliance() {
+  echo "Compliance checks echo!"
+  echo $HEROKU_TEST_RUN_BRANCH
   # if we're on the master branch, then run production tests (i.e. codecheck)
   if [ "$HEROKU_TEST_RUN_BRANCH" == "master" ]
   then
